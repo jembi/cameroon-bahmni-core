@@ -12,6 +12,8 @@ public class PatientContext {
     private String identifier;
     private String uuid;
     private String gender;
+     private boolean isDead;
+    private Date personDateCreated;
     private Map<String, Map<String, String>> personAttributes = new HashMap<>();
     private Map<String, Map<String, Object>> programAttributes = new HashMap<>();
     private Map<String, String> additionalPatientIdentifiers = new HashMap<>();
@@ -70,6 +72,22 @@ public class PatientContext {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public boolean getIsDead() {
+        return isDead;
+    }
+
+    public void setIsDead(boolean isDead) {
+        this.isDead = isDead;
+    }
+
+    public Date getPersonDateCreated() {
+        return personDateCreated;
+    }
+
+    public void setPersonDateCreated(Date personDateCreated) {
+        this.personDateCreated = personDateCreated;
     }
 
     public Map<String, Map<String, String>> getPersonAttributes() {

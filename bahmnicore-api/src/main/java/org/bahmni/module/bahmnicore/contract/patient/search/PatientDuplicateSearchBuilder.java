@@ -8,18 +8,18 @@ import org.hibernate.SessionFactory;
 import org.hibernate.transform.Transformers;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.type.Type;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class PatientSearchBuilder {
-
-	private Log log = LogFactory.getLog(this.getClass());
+public class PatientDuplicateSearchBuilder {
 	
+	private Log log = LogFactory.getLog(this.getClass());
+
 	private String visitJoin = " left outer join visit v on v.patient_id = p.person_id and v.date_stopped is null ";
 	private static String VISIT_JOIN = "_VISIT_JOIN_";
 	public static final String SELECT_STATEMENT = "select " +
@@ -70,7 +70,7 @@ public class PatientSearchBuilder {
 	private SessionFactory sessionFactory;
 	private Map<String,Type> types;
 
-	public PatientSearchBuilder(SessionFactory sessionFactory){
+	public PatientDuplicateSearchBuilder(SessionFactory sessionFactory){
 		select = SELECT_STATEMENT;
 		where = WHERE_CLAUSE;
 		from  = FROM_TABLE;
@@ -82,13 +82,25 @@ public class PatientSearchBuilder {
 
 	}
 
-	public PatientSearchBuilder withPatientName(String name){
-		PatientNameQueryHelper patientNameQueryHelper = new PatientNameQueryHelper(name);
-		where = patientNameQueryHelper.appendToWhereClause(where);
+	public PatientDuplicateSearchBuilder withPatientName(String name){
+		PatientDuplicateNameQueryHelper patientDuplicateNameQueryHelper = new PatientDuplicateNameQueryHelper(name);
+		where = patientDuplicateNameQueryHelper.appendToWhereClause(where);
 		return this;
 	}
-
-	public PatientSearchBuilder withPatientAddress(String addressFieldName, String addressFieldValue, String[] addressAttributeFields){
+	
+	public PatientDuplicateSearchBuilder withPatientGender(String gender){
+		PatientGenderQueryHelper patientGenderQueryHelper = new PatientGenderQueryHelper(gender);
+		where = patientGenderQueryHelper.appendToWhereClause(where);
+		return this;
+	}
+	
+	public PatientDuplicateSearchBuilder withPatientBirthDate(String birthDate){
+		PatientDuplicateBirthDateQueryHelper patientDuplicateBirthDateQueryHelper = new PatientDuplicateBirthDateQueryHelper(birthDate);
+		where = patientDuplicateBirthDateQueryHelper.appendToWhereClause(where);
+		return this;
+	}
+	
+	public PatientDuplicateSearchBuilder withPatientAddress(String addressFieldName, String addressFieldValue, String[] addressAttributeFields){
 		PatientAddressFieldQueryHelper patientAddressQueryHelper = new PatientAddressFieldQueryHelper(addressFieldName,addressFieldValue, addressAttributeFields);
 		where = patientAddressQueryHelper.appendToWhereClause(where);
 		select = patientAddressQueryHelper.selectClause(select);
@@ -96,18 +108,12 @@ public class PatientSearchBuilder {
 		types.putAll(patientAddressQueryHelper.addScalarQueryResult());
 		return this;
 	}
-
-	public PatientSearchBuilder withPatientIdentifier(String identifier, Boolean filterOnAllIdentifiers){
-		PatientIdentifierQueryHelper patientIdentifierQueryHelper = new PatientIdentifierQueryHelper(identifier, filterOnAllIdentifiers);
-		join = patientIdentifierQueryHelper.appendToJoinClause(join);
-		return this;
-	}
-
-	public PatientSearchBuilder withPatientAttributes(String customAttribute, List<Integer> personAttributeIds, List<Integer> attributeIds){
+	
+	public PatientDuplicateSearchBuilder withPatientAttributes(String customAttribute, List<Integer> personAttributeIds, List<Integer> attributeIds){
 		if(personAttributeIds.size() == 0 && attributeIds.size() == 0){
 			return this;
+			
 		}
-
 		PatientAttributeQueryHelper patientAttributeQueryHelper = new PatientAttributeQueryHelper(customAttribute,personAttributeIds,attributeIds);
 		select = patientAttributeQueryHelper.selectClause(select);
 		join = patientAttributeQueryHelper.appendToJoinClause(join);
@@ -116,37 +122,9 @@ public class PatientSearchBuilder {
 		return this;
 	}
 
-	public PatientSearchBuilder withProgramAttributes(String programAttribute, ProgramAttributeType programAttributeType){
-		if(programAttributeType == null){
-			return this;
-		}
-
-		Integer programAttributeTypeId = programAttributeType.getProgramAttributeTypeId();
-
-		boolean isAttributeValueCodedConcept = programAttributeType.getDatatypeClassname().equals(CodedConceptDatatype.class.getCanonicalName());
-
-
-		PatientProgramAttributeQueryHelper programAttributeQueryHelper;
-		if (isAttributeValueCodedConcept) {
-			programAttributeQueryHelper = new ProgramAttributeCodedValueQueryHelper(programAttribute,
-					programAttributeTypeId);
-		} else {
-			programAttributeQueryHelper = new PatientProgramAttributeQueryHelper(programAttribute, programAttributeTypeId);
-		}
-
-		select = programAttributeQueryHelper.selectClause(select);
-		join = programAttributeQueryHelper.appendToJoinClause(join);
-		where = programAttributeQueryHelper.appendToWhereClause(where);
-		types.putAll(programAttributeQueryHelper.addScalarQueryResult());
-		return this;
-	}
-
 	public SQLQuery buildSqlQuery(Integer limit, Integer offset){
 		String joinWithVisit = join.replace(VISIT_JOIN, visitJoin);
 		String query = select + from + joinWithVisit + where + GROUP_BY_KEYWORD + groupBy  + orderBy;
-		log.error("SQL Query");
-		log.error(query);
-
 		SQLQuery sqlQuery = sessionFactory.getCurrentSession()
 				.createSQLQuery(query)
 				.addScalar("uuid", StandardBasicTypes.STRING)
@@ -176,7 +154,7 @@ public class PatientSearchBuilder {
 		return sqlQuery;
 	}
 
-	public PatientSearchBuilder withLocation(String loginLocationUuid, Boolean filterPatientsByLocation) {
+	public PatientDuplicateSearchBuilder withLocation(String loginLocationUuid, Boolean filterPatientsByLocation) {
 		PatientVisitLocationQueryHelper patientVisitLocationQueryHelper = new PatientVisitLocationQueryHelper(loginLocationUuid);
 		visitJoin = patientVisitLocationQueryHelper.appendVisitJoinClause(visitJoin);
 		if (filterPatientsByLocation) {
@@ -184,4 +162,4 @@ public class PatientSearchBuilder {
 		}
 		return this;
 	}
-}	
+}

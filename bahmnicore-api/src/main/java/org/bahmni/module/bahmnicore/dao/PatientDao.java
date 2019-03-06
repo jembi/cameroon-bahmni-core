@@ -13,6 +13,11 @@ public interface PatientDao {
                                              String[] patientAttributes, String programAttribute, String programAttributeField,
                                              String[] addressSearchResultFields, String[] patientSearchResultFields, String loginLocationUuid, Boolean filterPatientsByLocation, Boolean filterOnAllIdentifiers);
 
+    public List<PatientResponse> getDuplicatePatients(String identifier, String name, String customAttribute,
+            String addressFieldName, String addressFieldValue, Integer length, Integer offset,
+            String[] patientAttributes, String programAttribute, String programAttributeField,
+            String[] addressSearchResultFields, String[] patientSearchResultFields, String loginLocationUuid, Boolean filterPatientsByLocation, Boolean filterOnAllIdentifiers, String gender, String birthDate);
+
     List<PatientResponse> getPatientsUsingLuceneSearch(String identifier, String name, String customAttribute,
                                                        String addressFieldName, String addressFieldValue, Integer length,
                                                        Integer offset, String[] customAttributeFields, String programAttributeFieldValue,

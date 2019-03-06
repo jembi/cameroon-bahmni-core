@@ -46,6 +46,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,6 +65,8 @@ import java.util.Objects;
 @Controller
 @RequestMapping(value = "/rest/" + RestConstants.VERSION_1 + "/bahmnicore/patientprofile")
 public class BahmniPatientProfileResource extends DelegatingCrudResource<PatientProfile> {
+    
+    private Log log = LogFactory.getLog(this.getClass());
 
     private EmrPatientProfileService emrPatientProfileService;
     private IdentifierSourceServiceWrapper identifierSourceServiceWrapper;
@@ -202,7 +206,7 @@ public class BahmniPatientProfileResource extends DelegatingCrudResource<Patient
         return delegate;
     }
 
-    private PatientProfile mapForUpdatePatient(String uuid, SimpleObject propertiesToUpdate) {
+    private PatientProfile mapForUpdatePatient(String uuid, SimpleObject propertiesToUpdate) throws Exception {
         if (propertiesToUpdate.get("patient") == null || !(propertiesToUpdate.get("patient") instanceof Map)) {
             throw new ConversionException("The patient property is missing");
         }
@@ -214,6 +218,42 @@ public class BahmniPatientProfileResource extends DelegatingCrudResource<Patient
         List<Object> identifiers = (List<Object>) ((Map) propertiesToUpdate.get("patient")).get("identifiers");
         for (Object identifier : identifiers) {
             LinkedHashMap identifierProperties = (LinkedHashMap) identifier;
+            Object identifierSource = identifierProperties.get("identifierSourceUuid");
+
+            if (identifierSource != null) {
+                String identifierPrefix = String.valueOf(identifierProperties.get("identifierPrefix"));
+                String identifierSourceUuid = String.valueOf(identifierProperties.get("identifierSourceUuid"));
+                identifierProperties.remove("identifierSourceUuid");
+                identifierProperties.remove("identifierPrefix");
+
+                final String identifierNew = String.valueOf(identifierProperties.get("identifier"));
+                boolean isRegistrationIDNumeric = identifierNew.replace(identifierPrefix, "").matches("[0-9]+");
+
+                if (identifierProperties.get("identifier") != null && !Objects.equals(identifierPrefix, "") && isRegistrationIDNumeric) {
+                    long givenRegistrationNumber = Long.parseLong(identifierNew.replace(identifierPrefix, ""));
+                    long latestRegistrationNumber = Long.parseLong(identifierSourceServiceWrapper.getSequenceValueUsingIdentifierSourceUuid(identifierSourceUuid));
+                    // if (!jumpAccepted) {
+                    //     final long sizeOfJump = givenRegistrationNumber - latestRegistrationNumber;
+                    //     if (sizeOfJump > 0) {
+                    //         jumpSizes.add(new HashMap<String, Object>() {{
+                    //             put("identifierType", ((HashMap) patientIdentifier).get("identifierType"));
+                    //             put("sizeOfJump", sizeOfJump);
+                    //         }});
+                    //     }
+                    // } else if (latestRegistrationNumber < (givenRegistrationNumber + 1)) {
+                    //     try {
+                    //         identifierSourceServiceWrapper.saveSequenceValueUsingIdentifierSourceUuid(givenRegistrationNumber + 1, identifierSourceUuid);
+                    //     } catch (DataException e) {
+                    //         return getIdentifierErrorMessageResponseEntity();
+                    //     }
+                    // }
+                } else if (identifierProperties.get("identifier") == null) {
+                    String generatedIdentifier = identifierSourceServiceWrapper.generateIdentifierUsingIdentifierSourceUuid(identifierSourceUuid, "");
+                    identifierProperties.put("identifier", generatedIdentifier);
+                }
+            }
+            
+
             identifierProperties.remove("identifierSourceUuid");
             identifierProperties.remove("identifierPrefix");
             PatientIdentifier patientIdentifier = (PatientIdentifier) ConversionUtil.convert(identifierProperties, PatientIdentifier.class);

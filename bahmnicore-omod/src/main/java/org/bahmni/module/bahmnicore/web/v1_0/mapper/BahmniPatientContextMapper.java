@@ -22,7 +22,6 @@ public class BahmniPatientContextMapper {
 
     public PatientContext map(Patient patient, BahmniPatientProgram patientProgram, List<String> configuredPersonAttributes, List<String> configuredProgramAttributes, List<String> configuredPatientIdentifiers, PatientIdentifierType primaryIdentifierType) {
         PatientContext patientContext = new PatientContext();
-
         patientContext.setBirthdate(patient.getBirthdate());
         patientContext.setFamilyName(patient.getFamilyName());
         patientContext.setGivenName(patient.getGivenName());
@@ -30,6 +29,8 @@ public class BahmniPatientContextMapper {
         patientContext.setGender(patient.getGender());
         patientContext.setIdentifier(patient.getPatientIdentifier(primaryIdentifierType).getIdentifier());
         patientContext.setUuid(patient.getUuid());
+        patientContext.setIsDead(patient.isDead());
+        patientContext.setPersonDateCreated(patient.getPersonDateCreated());
 
         mapConfiguredPersonAttributes(patient, configuredPersonAttributes, patientContext);
         mapConfiguredProgramAttributes(patientProgram, configuredProgramAttributes, patientContext);

@@ -21,7 +21,9 @@ public class PatientResponse {
     private int personId;
     private Date deathDate;
     private String identifier;
-    private String addressFieldValue;
+    private String NID;
+    private String nickName;
+	private String addressFieldValue;
     private String givenName;
     private String middleName;
     private String familyName;
@@ -32,7 +34,7 @@ public class PatientResponse {
     private Object patientProgramAttributeValue;
     private Boolean hasBeenAdmitted;
 
-    public String getAge() {
+	public String getAge() {
         if (birthDate == null)
             return null;
 
@@ -73,6 +75,22 @@ public class PatientResponse {
         this.uuid = uuid;
     }
 
+    public String getNID() {
+        return NID;
+    }
+ 
+    public void setNID(String NID) {
+        this.NID = NID;
+    }
+
+    public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+    
     @JsonSerialize(using=JsonDateSerializer.class)
     public Date getBirthDate() {
         return birthDate;
