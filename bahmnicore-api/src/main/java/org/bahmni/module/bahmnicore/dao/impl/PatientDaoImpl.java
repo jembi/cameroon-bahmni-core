@@ -5,6 +5,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.bahmni.module.bahmnicore.contract.patient.mapper.PatientResponseMapper;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
+import org.bahmni.module.bahmnicore.contract.patient.search.PatientDuplicateSearchBuilder;
 import org.bahmni.module.bahmnicore.contract.patient.search.PatientSearchBuilder;
 import org.bahmni.module.bahmnicore.dao.PatientDao;
 import org.bahmni.module.bahmnicore.model.bahmniPatientProgram.ProgramAttributeType;
@@ -56,7 +57,7 @@ public class PatientDaoImpl implements PatientDao {
                                              String[] patientSearchResultFields, String loginLocationUuid, Boolean filterPatientsByLocation, Boolean filterOnAllIdentifiers) {
 
         validateSearchParams(customAttributeFields, programAttributeFieldName, addressFieldName);
-
+        filterOnAllIdentifiers=true;
         ProgramAttributeType programAttributeType = getProgramAttributeType(programAttributeFieldName);
 
         SQLQuery sqlQuery = new PatientSearchBuilder(sessionFactory)
@@ -242,4 +243,22 @@ public class PatientDaoImpl implements PatientDao {
         querytoGetPatients.setString("aIsToB", aIsToB);
         return querytoGetPatients.list();
     }
+
+	@Override
+
+    public List<PatientResponse> getDuplicatePatients(String name, String customAttribute,
+            										  String addressFieldName, String addressFieldValue, Integer length,
+            										  Integer offset, String[] customAttributeFields, String[] addressSearchResultFields,
+            										  String[] patientSearchResultFields, String gender, String birthDate) {
+			
+			SQLQuery sqlQuery = new PatientDuplicateSearchBuilder(sessionFactory)
+			.withPatientName(name)
+			.withPatientGender(gender)
+			.withPatientAddress(addressFieldName, addressFieldValue, addressSearchResultFields)
+			.withPatientBirthDate(birthDate)
+			.withPatientAttributes(customAttribute, getPersonAttributeIds(customAttributeFields), getPersonAttributeIds(patientSearchResultFields))
+			.buildSqlQuery(length, offset);
+			return sqlQuery.list();
+}
+	
 }

@@ -1,5 +1,6 @@
 package org.bahmni.module.bahmnicore.service.impl;
 
+import org.bahmni.module.bahmnicore.contract.patient.PatientDuplicateSearchParameters;
 import org.bahmni.module.bahmnicore.contract.patient.PatientSearchParameters;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientConfigResponse;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@Lazy //to toString rid of cyclic dependencies
+@Lazy //to get rid of cyclic dependencies
 public class BahmniPatientServiceImpl implements BahmniPatientService {
     private PersonService personService;
     private ConceptService conceptService;
@@ -92,5 +93,20 @@ public class BahmniPatientServiceImpl implements BahmniPatientService {
     public List<RelationshipType> getByAIsToB(String aIsToB) {
         return patientDao.getByAIsToB(aIsToB);
     }
+
+	@Override
+	public List<PatientResponse> search(PatientDuplicateSearchParameters searchParameters) {
+		return patientDao.getDuplicatePatients(
+                searchParameters.getName(),
+                searchParameters.getCustomAttribute(),
+                searchParameters.getAddressFieldName(),
+                searchParameters.getAddressFieldValue(),
+                searchParameters.getLength(),
+                searchParameters.getStart(),
+                searchParameters.getPatientAttributes(),
+                searchParameters.getAddressSearchResultFields(),
+                searchParameters.getPatientSearchResultFields(),
+                searchParameters.getGender(), searchParameters.getBirthDate());
+	}
 
 }
