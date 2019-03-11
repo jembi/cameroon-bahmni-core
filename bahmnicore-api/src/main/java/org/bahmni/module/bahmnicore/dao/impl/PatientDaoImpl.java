@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.bahmni.module.bahmnicore.contract.patient.mapper.PatientResponseMapper;
+import org.bahmni.module.bahmnicore.contract.patient.response.DuplicatedPatientResponse;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
 import org.bahmni.module.bahmnicore.contract.patient.search.PatientSearchBuilder;
 import org.bahmni.module.bahmnicore.dao.PatientDao;
@@ -19,6 +20,7 @@ import org.hibernate.search.FullTextSession;
 import org.hibernate.search.Search;
 import org.hibernate.search.query.dsl.BooleanJunction;
 import org.hibernate.search.query.dsl.QueryBuilder;
+import org.hibernate.transform.Transformers;
 import org.openmrs.Patient;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
@@ -29,13 +31,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static java.util.stream.Collectors.reducing;
 import static java.util.stream.Collectors.toList;
 
 @Repository
@@ -68,6 +70,138 @@ public class PatientDaoImpl implements PatientDao {
                 .withLocation(loginLocationUuid, filterPatientsByLocation)
                 .buildSqlQuery(length, offset);
         return sqlQuery.list();
+    }
+
+    @Override
+    public List<DuplicatedPatientResponse> getDuplicatedPatients(String systemIdentifier,
+                                                                 String givenName, String familyName,
+                                                                 Date dateOfBirth, String gender, String phoneNumber,
+                                                                 String subDivision) {
+
+        String givenNameFilter = "";
+        if (givenName != null) {
+            givenNameFilter = "pn.given_name LIKE :givenName AND ";
+        }
+
+        String familyNameFilter = "";
+        if (familyName != null) {
+            familyNameFilter = "pn.family_name LIKE :familyName AND ";
+        }
+
+        String dateOfBirthFilter = "";
+        if (dateOfBirth != null) {
+            dateOfBirthFilter = "DATE(per.birthdate) = DATE(:dateOfBirth) AND ";
+        }
+
+        String genderFilter = "";
+        if (gender != null) {
+            genderFilter = "per.gender = :gender AND ";
+        }
+
+        String phoneNumberFilter = "";
+        if (phoneNumber != null) {
+            phoneNumberFilter = " AND pattr.value = :phoneNumber ";
+        }
+
+        String subDivisionFilter = "";
+        if (subDivision != null) {
+            subDivisionFilter = "pad.address3 LIKE :subDivision AND ";
+        }
+
+        StringBuilder queryString = new StringBuilder(
+            "SELECT" +
+            "( SELECT pi.identifier " +
+              "FROM patient_identifier as pi " +
+              "JOIN patient_identifier_type as pit ON pi.identifier_type = pit.patient_identifier_type_id " +
+              "WHERE pi.patient_id = pat.patient_id " +
+                "AND pit.retired = 0 " +
+                "AND pit.name = 'Patient Identifier' " +
+              ") as `systemIdentifier`, " +
+            "( SELECT pi.identifier " +
+              "FROM patient_identifier as pi " +
+              "JOIN patient_identifier_type as pit ON pi.identifier_type = pit.patient_identifier_type_id " +
+              "WHERE pi.patient_id = pat.patient_id " +
+                "AND pit.retired = 0 " +
+                "AND pit.name = 'REGISTRATION_IDTYPE_1_CNI_KEY' " +
+              ") as `cni`, " +
+            "( SELECT pi.identifier " +
+              "FROM patient_identifier as pi " +
+              "JOIN patient_identifier_type as pit ON pi.identifier_type = pit.patient_identifier_type_id " +
+              "WHERE pi.patient_id = pat.patient_id " +
+                "AND pit.retired = 0 " +
+                "AND pit.name = 'REGISTRATION_IDTYPE_2_ART_KEY' " +
+              ") as `art`, " +
+            "CONCAT( pn.given_name, ' ', pn.family_name ) as `name`, " +
+            "per.gender as `gender`, " +
+            "per.birthdate as `birthDate`, " +
+            "per.death_date as `deathDate`, " +
+            "pad.address3 as `subDivision`, " +
+            "( SELECT pattr.value " +
+              "FROM person_attribute as pattr " +
+              "JOIN person_attribute_type as pattrt ON pattr.person_attribute_type_id = pattrt.person_attribute_type_id " +
+              "WHERE pattr.person_id = per.person_id " +
+                "AND pattr.voided = 0 " +
+                "AND pattrt.retired = 0 " +
+                "AND pattrt.name = 'PERSON_ATTRIBUTE_TYPE_PHONE_NUMBER' " +
+                phoneNumberFilter +
+              ") as `phoneNumber` " +
+        "FROM " +
+            "person as per " +
+        "JOIN patient as pat ON pat.patient_id = per.person_id AND pat.voided = 0 " +
+        "JOIN person_name as pn ON pn.person_id = per.person_id AND pn.voided = 0 " +
+        "LEFT JOIN person_address as pad ON pad.person_id = per.person_id AND pad.voided = 0 " +
+        "WHERE " +
+            genderFilter +
+            dateOfBirthFilter +
+            givenNameFilter +
+            familyNameFilter +
+            subDivisionFilter +
+            " per.voided = 0 " +
+        " LIMIT 0,5");
+
+        SQLQuery query = sessionFactory.getCurrentSession().createSQLQuery(queryString.toString());
+
+        if (givenName != null) {
+            query.setParameter("givenName", "%" + givenName + "%");
+        }
+
+        if (familyName != null) {
+            query.setParameter("familyName","%" + familyName + "%");
+        }
+
+        if (dateOfBirth != null) {
+            query.setParameter("dateOfBirth",dateOfBirth);
+        }
+
+        if (gender != null) {
+            query.setParameter("gender",gender);
+        }
+
+        if (phoneNumber != null) {
+            query.setParameter("phoneNumber",phoneNumber);
+        }
+
+        if (subDivision != null) {
+            query.setParameter("subDivision","%" + subDivision + "%");
+        }
+
+        query.setResultTransformer(Transformers.aliasToBean(DuplicatedPatientResponse.class));
+
+        List<DuplicatedPatientResponse> result =  query.list();
+        return removeEmptySystemIdentifierOrPhoneNumber(result, systemIdentifier, phoneNumber);
+    }
+
+    private List<DuplicatedPatientResponse> removeEmptySystemIdentifierOrPhoneNumber(List<DuplicatedPatientResponse> result, String systemIdentifier, String phoneNumber) {
+    	List<DuplicatedPatientResponse> filteredResult = new ArrayList<>();
+    	for(DuplicatedPatientResponse record: result) {
+            if ((systemIdentifier != null && systemIdentifier.equalsIgnoreCase(record.getSystemIdentifier())) ||
+                (phoneNumber != null && !phoneNumber.equalsIgnoreCase(record.getPhoneNumber()))) {
+                // Record excluded from the final result
+            } else {
+            	filteredResult.add(record);
+            }
+        }
+    	return filteredResult;
     }
 
     @Override

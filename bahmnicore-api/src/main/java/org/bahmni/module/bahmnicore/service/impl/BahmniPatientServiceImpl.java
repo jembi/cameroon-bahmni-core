@@ -1,6 +1,7 @@
 package org.bahmni.module.bahmnicore.service.impl;
 
 import org.bahmni.module.bahmnicore.contract.patient.PatientSearchParameters;
+import org.bahmni.module.bahmnicore.contract.patient.response.DuplicatedPatientResponse;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientConfigResponse;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
 import org.bahmni.module.bahmnicore.dao.PatientDao;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -81,6 +83,12 @@ public class BahmniPatientServiceImpl implements BahmniPatientService {
                 searchParameters.getPatientSearchResultFields(),
                 searchParameters.getLoginLocationUuid(),
                 searchParameters.getFilterPatientsByLocation(), searchParameters.getFilterOnAllIdentifiers());
+    }
+
+    @Override
+    public List<DuplicatedPatientResponse> getDuplicatedPatients(String systemIdentifier, String givenName, String familyName,
+                                            Date dateOfBirth, String gender, String phoneNumber, String subDivision){
+        return patientDao.getDuplicatedPatients(systemIdentifier, givenName, familyName, dateOfBirth, gender, phoneNumber, subDivision);
     }
 
     @Override
