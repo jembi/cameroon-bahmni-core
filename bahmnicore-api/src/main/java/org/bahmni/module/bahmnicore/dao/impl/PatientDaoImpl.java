@@ -109,7 +109,8 @@ public class PatientDaoImpl implements PatientDao {
         }
 
         StringBuilder queryString = new StringBuilder(
-            "SELECT" +
+            "SELECT " +
+            " per.uuid as `uuid`, " +
             "( SELECT pi.identifier " +
               "FROM patient_identifier as pi " +
               "JOIN patient_identifier_type as pit ON pi.identifier_type = pit.patient_identifier_type_id " +

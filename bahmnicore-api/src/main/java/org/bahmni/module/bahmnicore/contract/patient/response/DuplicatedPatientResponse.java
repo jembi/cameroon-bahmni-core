@@ -13,6 +13,7 @@ import java.util.Date;
 
 public class DuplicatedPatientResponse {
     private String systemIdentifier;
+    private String uuid;
     private String cni;
     private String art;
     private String name;
@@ -143,4 +144,12 @@ public class DuplicatedPatientResponse {
             gen.writeString(formattedDate);
         }
     }
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 }
