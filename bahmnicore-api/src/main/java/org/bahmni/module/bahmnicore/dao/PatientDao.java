@@ -1,9 +1,11 @@
 package org.bahmni.module.bahmnicore.dao;
 
+import org.bahmni.module.bahmnicore.contract.patient.response.DuplicatedPatientResponse;
 import org.bahmni.module.bahmnicore.contract.patient.response.PatientResponse;
 import org.openmrs.Patient;
 import org.openmrs.RelationshipType;
 
+import java.util.Date;
 import java.util.List;
 
 public interface PatientDao {
@@ -12,6 +14,9 @@ public interface PatientDao {
                                              String addressFieldName, String addressFieldValue, Integer length, Integer offset,
                                              String[] patientAttributes, String programAttribute, String programAttributeField,
                                              String[] addressSearchResultFields, String[] patientSearchResultFields, String loginLocationUuid, Boolean filterPatientsByLocation, Boolean filterOnAllIdentifiers);
+
+    public List<DuplicatedPatientResponse> getDuplicatedPatients(String systemIdentifier, String givenName, String familyName,
+                                            Date dateOfBirth, String gender, String phoneNumber, String subDivision);
 
     List<PatientResponse> getPatientsUsingLuceneSearch(String identifier, String name, String customAttribute,
                                                        String addressFieldName, String addressFieldValue, Integer length,
