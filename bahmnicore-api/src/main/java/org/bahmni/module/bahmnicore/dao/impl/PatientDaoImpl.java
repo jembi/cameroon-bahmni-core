@@ -90,7 +90,7 @@ public class PatientDaoImpl implements PatientDao {
 
         String dateOfBirthFilter = "";
         if (dateOfBirth != null) {
-            dateOfBirthFilter = "DATE(per.birthdate) = DATE(:dateOfBirth) AND ";
+            dateOfBirthFilter = "YEAR(per.birthdate) = YEAR(:dateOfBirth) AND ";
         }
 
         String genderFilter = "";
