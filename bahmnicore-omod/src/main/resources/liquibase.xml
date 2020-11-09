@@ -4397,4 +4397,31 @@
         <comment>Override SQL query for Get Patient Details in Ward</comment>
         <sqlFile path="BahmniBMPatientListInWard.sql"/>
     </changeSet>
+    <changeSet id="jembi-COM-946-20201102122100" author="lauravignoli" context="r0.92">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="patient_program_attribute_history" />
+            </not>
+        </preConditions>
+        <createTable tableName="patient_program_attribute_history">
+            <column name="patient_program_attribute_history_id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="patient_program_id" type="int"><constraints nullable="false" /></column>
+            <column name="attribute_type_id" type="int"><constraints nullable="false" /></column>
+            <column name="value_reference" type="text"><constraints nullable="false" /></column>
+            <column name="uuid" type="char(38)"><constraints nullable="false" unique="true" /></column>
+            <column name="creator" type="int"><constraints nullable="false"/></column>
+            <column name="date_created" type="datetime"><constraints nullable="false"/></column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="patient_program_attribute_history_programid_fk"
+                                 baseTableName="patient_program_attribute_history" baseColumnNames="patient_program_id"
+                                 referencedTableName="patient_program" referencedColumnNames="patient_program_id" />
+        <addForeignKeyConstraint constraintName="patient_program_attribute_history_attributetype_fk"
+                                 baseTableName="patient_program_attribute_history" baseColumnNames="attribute_type_id"
+                                 referencedTableName="program_attribute_type" referencedColumnNames="program_attribute_type_id" />
+        <addForeignKeyConstraint constraintName="patient_program_attribute_history_creator_fk"
+                                 baseTableName="patient_program_attribute_history" baseColumnNames="creator"
+                                 referencedTableName="users" referencedColumnNames="user_id" />
+    </changeSet>
 </databaseChangeLog>
