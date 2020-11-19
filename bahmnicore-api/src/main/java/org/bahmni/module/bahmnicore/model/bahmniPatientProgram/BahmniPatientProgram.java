@@ -1,11 +1,8 @@
 package org.bahmni.module.bahmnicore.model.bahmniPatientProgram;
 
 import org.openmrs.PatientProgram;
-import org.openmrs.customdatatype.CustomDatatype;
-import org.openmrs.customdatatype.CustomDatatypeUtil;
 import org.openmrs.customdatatype.CustomValueDescriptor;
 import org.openmrs.customdatatype.Customizable;
-import org.openmrs.customdatatype.NotYetPersistedException;
 
 import java.util.ArrayList;
 import java.util.Collection;

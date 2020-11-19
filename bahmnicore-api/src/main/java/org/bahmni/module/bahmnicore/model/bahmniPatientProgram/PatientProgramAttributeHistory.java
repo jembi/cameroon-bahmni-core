@@ -1,14 +1,11 @@
 package org.bahmni.module.bahmnicore.model.bahmniPatientProgram;
 
-import org.openmrs.attribute.Attribute;
+import java.util.Date;
 import org.openmrs.attribute.BaseAttribute;
-import org.openmrs.customdatatype.CustomDatatype;
-import org.openmrs.customdatatype.CustomDatatypeUtil;
-import org.openmrs.customdatatype.InvalidCustomValueException;
-import org.openmrs.customdatatype.NotYetPersistedException;
-import org.openmrs.customdatatype.SingleCustomValue;
 
-public class PatientProgramAttributeHistory extends BaseAttribute<ProgramAttributeType, BahmniPatientProgram> implements Attribute<ProgramAttributeType, BahmniPatientProgram> {
+public class PatientProgramAttributeHistory extends BaseAttribute<ProgramAttributeType, BahmniPatientProgram> {
+    private static final long serialVersionUID = 1L;
+
     private Integer patientProgramAttributeHistoryId;
     
     public PatientProgramAttributeHistory() {
@@ -21,7 +18,7 @@ public class PatientProgramAttributeHistory extends BaseAttribute<ProgramAttribu
 		this.setAttributeType(attribute.getAttributeType());
 		this.setPatientProgram(attribute.getPatientProgram());
 		this.setCreator(attribute.getCreator());
-		this.setDateCreated(attribute.getDateCreated());
+		this.setDateCreated(new Date());
 		this.setValueReferenceInternal(attribute.getValueReferenceFromValue());
 		
 	}
