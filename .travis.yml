@@ -5,6 +5,6 @@ jdk:
 install:
   - travis_wait 30 mvn install -q
 script:
-  - mvn verify -P IT -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -pl bahmni-emr-api/
-  - mvn verify -P IT -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -pl bahmnicore-api/
-  - mvn verify -P IT -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -pl bahmnicore-omod/
+  - mvn verify -P IT -B -q -pl bahmni-emr-api/
+  - mvn verify -P IT -B -q -pl bahmnicore-api/
+  - mvn verify -P IT -B -q -pl bahmnicore-omod/
