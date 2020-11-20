@@ -2,6 +2,9 @@ language: java
 dist: trusty
 jdk:
   - oraclejdk8
+cache:
+  directories:
+    - $HOME/.m2
 install:
   - travis_wait 30 mvn install -q
 script:
