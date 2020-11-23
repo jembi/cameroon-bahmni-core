@@ -13,6 +13,7 @@ import java.util.Set;
 public class BahmniPatientProgram extends PatientProgram implements Customizable<PatientProgramAttribute> {
 
     private Set<PatientProgramAttribute> attributes = new LinkedHashSet();
+    private Set<PatientProgramAttributeHistory> attributesHistory = new LinkedHashSet();
 
     public BahmniPatientProgram() {
         super();
@@ -25,6 +26,14 @@ public class BahmniPatientProgram extends PatientProgram implements Customizable
     @Override
     public Set<PatientProgramAttribute> getAttributes() {
         return attributes;
+    }
+    
+    public Set<PatientProgramAttributeHistory> getAttributesHistory() {
+        return attributesHistory;
+    }
+    
+    public void setAttributesHistory(Set<PatientProgramAttributeHistory> attributesHistory) {
+        this.attributesHistory = attributesHistory;
     }
 
     @Override
@@ -65,6 +74,18 @@ public class BahmniPatientProgram extends PatientProgram implements Customizable
 
         this.getAttributes().add(attribute);
         attribute.setOwner(this);
+        
+        addAttributeAsHistory(attribute);
+    }
+    
+    private void addAttributeAsHistory(PatientProgramAttribute attribute) {
+    	
+    	// only add if it's a new attribute or an updated one
+    	if (attribute.getId() == null || !attribute.getValueReference().equals(attribute.getValueReferenceFromValue())) {
+    		PatientProgramAttributeHistory history = new PatientProgramAttributeHistory(attribute);
+            this.getAttributesHistory().add(history);
+            history.setOwner(this);
+    	} 
     }
 
     public void setAttributes(Set<PatientProgramAttribute> attributes) {
