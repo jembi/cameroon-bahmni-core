@@ -19,25 +19,16 @@ import org.springframework.web.util.UriTemplate;
 
 @Controller
 public class OdooSyncController {
-	
-protected final Log log = LogFactory.getLog(getClass());
-	
-	
-	
+	protected final Log log = LogFactory.getLog(getClass());
 	@RequestMapping(value = "/rest/" + RestConstants.VERSION_1 + "/odooapi/getquantity/{uuid}", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<?> gettest(@PathVariable String uuid) throws UnsupportedEncodingException {
-		
 		String uri = "http://127.0.0.1:8069/api/products?uuid={uuid}";
 		URI expanded = new UriTemplate(uri).expand(uuid);
 		uri = URLDecoder.decode(expanded.toString(), "UTF-8");
-		
 		RestTemplate restTemplate = new RestTemplate();
 		String result = restTemplate.getForObject(uri, String.class);
-		
-		
-		return new ResponseEntity<>(result, HttpStatus.OK);
-		
+		return new ResponseEntity<>(result, HttpStatus.OK);	
 	}
 
 }
