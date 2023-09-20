@@ -28,7 +28,7 @@ protected final Log log = LogFactory.getLog(getClass());
 	@ResponseBody
 	public ResponseEntity<?> gettest(@PathVariable String uuid) throws UnsupportedEncodingException {
 		
-		String uri = "http://127.0.0.1:8069/api/products?uuid={uuid}";
+		String uri = "http://localhost:8069/api/products?uuid={uuid}";
 		URI expanded = new UriTemplate(uri).expand(uuid);
 		uri = URLDecoder.decode(expanded.toString(), "UTF-8");
 		
