@@ -4397,39 +4397,23 @@
         <comment>Override SQL query for Get Patient Details in Ward</comment>
         <sqlFile path="BahmniBMPatientListInWard.sql"/>
     </changeSet>
-    <changeSet id="Jembi-COM-1285_202311021258" author="Tresor L">
-        <comment>
-            Adding new DrugOrder relationship tables to handle category and dispense date fields
-        </comment>
-        <sql>
-            CREATE TABLE drug_order_relationship(
-            drug_order_relationship_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-            drug_order_id INT NOT NULL,
-            category_id INT NOT NULL,
-            dispense_date DATETIME NOT NULL,
-            date_created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            creator INT NOT NULL,
-            FOREIGN KEY (drug_order_id) REFERENCES drug_order (order_id),
-            FOREIGN KEY (category_id) REFERENCES concept (concept_id),
-            FOREIGN KEY (creator) REFERENCES person (person_id)
-            );
-        </sql>
-    </changeSet>
-    <changeSet id="20240319-1703" author="Sush">
+
+    <changeSet id="20240219-3014" author="Sush">
 
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="drug_dispensed" />
+                <tableExists tableName="drug_dispense" />
             </not>
         </preConditions>
 
         <sql>
-            CREATE TABLE drug_dispensed (
+            CREATE TABLE drug_dispense (
             id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
             start_date DATETIME NOT NULL,
             order_uuid CHAR(38) NOT NULL,
             order_id INT(11) NOT NULL,
-            date_created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+            date_created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            UNIQUE (order_uuid, order_id)
             );
 
         </sql>

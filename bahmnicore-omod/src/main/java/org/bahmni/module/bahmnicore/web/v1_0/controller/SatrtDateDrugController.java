@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.openmrs.Order;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,28 +40,26 @@ public class SatrtDateDrugController extends BaseRestController {
 	@Autowired
 	private DrugStartDateDao drugStartDateDao;
 	
-	@RequestMapping(value = "/rest/v1" + "/cameroonbahmni/pateints", method = RequestMethod.GET)
+	@RequestMapping(value = "/rest/v1" + "/cameroonbahmni/startdate/{orderUUID}", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<List<Person>> search(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		try {
-			log.error("patients ::" + "111111111111111111111111111111111111111111111111");
-			return new ResponseEntity("json", HttpStatus.OK);
-			
-		}
-		catch (IllegalArgumentException e) {
-			return new ResponseEntity(HttpStatus.BAD_REQUEST);
-		}
+	public DrugStartDate startDate(@PathVariable("orderUUID") String orderUUID ) throws Exception {
+		DrugStartDate oldDrugStartDate = drugStartDateDao.getStartDateByOrderUUID(orderUUID);
+		return oldDrugStartDate;
 	}
 	
 	@RequestMapping(value = "/rest/v1" + "/cameroonbahmni/drugstartdate", method = RequestMethod.POST)
 	@ResponseBody
 	public DrugStartDate save(@RequestBody DrugStartDate drugStartDate) throws Exception {
-		
-		log.error("patients ::" + "111111111111111111111111111111111111111111111111");
-		log.error(drugStartDate);
-		return drugStartDateDao.saveOrUpdate(drugStartDate);
-		
+		Order order = drugStartDateDao.getOrderIDByUuid(drugStartDate.getOrderUuid());
+		drugStartDate.setOrderId(order.getOrderId());
+		DrugStartDate oldDrugStartDate = drugStartDateDao.getStartDateByOrderUUID(drugStartDate.getOrderUuid());
+
+		if (oldDrugStartDate != null) {
+			log.error(oldDrugStartDate.getId());
+			drugStartDate.setId(oldDrugStartDate.getId());
+			return drugStartDateDao.updateDrugStartDate(drugStartDate);
+		}else {
+			return drugStartDateDao.saveOrUpdate(drugStartDate);
+		}
 	}
-	
 }
