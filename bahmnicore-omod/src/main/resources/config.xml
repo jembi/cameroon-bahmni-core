@@ -130,6 +130,7 @@
         PatientProgramAttribute.hbm.xml
         PatientProgramAttributeHistory.hbm.xml
         PatientProgram.hbm.xml
+        drugStartDate.hbm.xml
         </mappingFiles>
     <!-- Internationalization -->
     <!-- All message codes should start with moduleId.* -->
