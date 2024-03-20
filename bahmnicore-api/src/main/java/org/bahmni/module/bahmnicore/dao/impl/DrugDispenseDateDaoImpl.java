@@ -7,7 +7,6 @@ import org.bahmni.module.bahmnicore.model.DrugDispenseDate;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.Session;
-
 import org.openmrs.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,6 +39,7 @@ public class DrugDispenseDateDaoImpl implements DrugDispenseDateDao {
 	@Transactional
 	public DrugDispenseDate saveOrUpdate(DrugDispenseDate drugDispenseDate) {
 		sessionFactory.getCurrentSession().saveOrUpdate(drugDispenseDate);
+		log.info("Added Dispense Date ");
 		return drugDispenseDate;
 	}
 
@@ -85,6 +85,3 @@ public class DrugDispenseDateDaoImpl implements DrugDispenseDateDao {
         return drugDispenseDate;
     }
 }
-
-
-

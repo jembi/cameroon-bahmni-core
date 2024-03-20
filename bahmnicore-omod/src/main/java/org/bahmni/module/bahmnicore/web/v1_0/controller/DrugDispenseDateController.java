@@ -52,10 +52,11 @@ public class DrugDispenseDateController extends BaseRestController {
 	public DrugDispenseDate save(@RequestBody DrugDispenseDate drugDispenseDate) throws Exception {
 		Order order = drugDispenseDateDao.getOrderIDByUuid(drugDispenseDate.getOrderUuid());
 		drugDispenseDate.setOrderId(order.getOrderId());
+		log.info("Found order Id "+ order.getOrderId());
 		DrugDispenseDate oldDrugDispenseDate = drugDispenseDateDao.getDispenseDateByOrderUUID(drugDispenseDate.getOrderUuid());
 
 		if (oldDrugDispenseDate != null) {
-			log.error(oldDrugDispenseDate.getId());
+			log.info("Updatting Dispense Date for id  "+oldDrugDispenseDate.getId());
 			drugDispenseDate.setId(oldDrugDispenseDate.getId());
 			return drugDispenseDateDao.updateDrugDispenseDate(drugDispenseDate);
 		}else {
