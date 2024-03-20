@@ -3,13 +3,13 @@
         "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
         "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="org.openmrs">
-    <class name="org.bahmni.module.bahmnicore.model.DrugStartDate" table="drug_dispense">
+    <class name="org.bahmni.module.bahmnicore.model.DrugDispenseDate" table="drug_dispense">
         <id name="id" type="int" column="id" unsaved-value="0">
             <generator class="native">
                 <param name="sequence">id_seq</param>
             </generator>
         </id>
-        <property name="startDate" type="java.util.Date" column="start_date" not-null="true" />
+        <property name="dispenseDate" type="java.util.Date" column="start_date" not-null="true" />
         <property name="orderUuid" type="java.lang.String" column="order_uuid" not-null="true" unique="true" />
         <property name="orderId" type="java.lang.Integer" column="order_id" not-null="true" unique="true" />
     </class>

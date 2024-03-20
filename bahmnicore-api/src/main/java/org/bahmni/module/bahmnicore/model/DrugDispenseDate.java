@@ -2,9 +2,9 @@ package org.bahmni.module.bahmnicore.model;
 
 import java.util.Date;
 
-public class DrugStartDate {
+public class DrugDispenseDate {
 	private int id;
-	private Date startDate;
+	private Date dispenseDate;
 	
 	private String orderUuid;
 	
@@ -18,14 +18,14 @@ public class DrugStartDate {
 		this.id = id;
 	}
 
-	public Date getStartDate() {
-		return startDate;
+	public Date getDispenseDate() {
+		return dispenseDate;
 	}
-	
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
+
+	public void setDispenseDate(Date dispenseDate) {
+		this.dispenseDate = dispenseDate;
 	}
-	
+
 	public String getOrderUuid() {
 		return orderUuid;
 	}

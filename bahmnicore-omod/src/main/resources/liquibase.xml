@@ -4398,7 +4398,7 @@
         <sqlFile path="BahmniBMPatientListInWard.sql"/>
     </changeSet>
 
-    <changeSet id="20240219-3014" author="Sush">
+    <changeSet id="20240220-3214" author="Sush">
 
         <preConditions onFail="MARK_RAN">
             <not>
@@ -4409,7 +4409,7 @@
         <sql>
             CREATE TABLE drug_dispense (
             id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-            start_date DATETIME NOT NULL,
+            dispenseDate DATETIME NOT NULL,
             order_uuid CHAR(38) NOT NULL,
             order_id INT(11) NOT NULL,
             date_created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,

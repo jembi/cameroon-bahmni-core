@@ -3,8 +3,8 @@ package org.openmrs.module.cameroonbahmni.web.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.bahmni.module.bahmnicore.dao.DrugStartDateDao;
-import org.bahmni.module.bahmnicore.model.DrugStartDate;
+import org.bahmni.module.bahmnicore.dao.DrugDispenseDateDao;
+import org.bahmni.module.bahmnicore.model.DrugDispenseDate;
 import org.springframework.transaction.annotation.Transactional;
 
 import org.apache.commons.logging.Log;
@@ -33,33 +33,33 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
-public class SatrtDateDrugController extends BaseRestController {
+public class DrugDispenseDateController extends BaseRestController {
 
 	protected final Log log = LogFactory.getLog(getClass());
 
 	@Autowired
-	private DrugStartDateDao drugStartDateDao;
+	private DrugDispenseDateDao DrugDispenseDateDao;
 	
-	@RequestMapping(value = "/rest/v1" + "/cameroonbahmni/startdate/{orderUUID}", method = RequestMethod.GET)
+	@RequestMapping(value = "/rest/v1" + "/cameroonbahmni/drugDispenseDate/{orderUUID}", method = RequestMethod.GET)
 	@ResponseBody
-	public DrugStartDate startDate(@PathVariable("orderUUID") String orderUUID ) throws Exception {
-		DrugStartDate oldDrugStartDate = drugStartDateDao.getStartDateByOrderUUID(orderUUID);
-		return oldDrugStartDate;
+	public DrugDispenseDate dispenseDate(@PathVariable("orderUUID") String orderUUID ) throws Exception {
+		DrugDispenseDate oldDrugDispenseDate = DrugDispenseDateDao.getDispenseDateByOrderUUID(orderUUID);
+		return oldDrugDispenseDate;
 	}
 	
-	@RequestMapping(value = "/rest/v1" + "/cameroonbahmni/drugstartdate", method = RequestMethod.POST)
+	@RequestMapping(value = "/rest/v1" + "/cameroonbahmni/drugDispenseDate", method = RequestMethod.POST)
 	@ResponseBody
-	public DrugStartDate save(@RequestBody DrugStartDate drugStartDate) throws Exception {
-		Order order = drugStartDateDao.getOrderIDByUuid(drugStartDate.getOrderUuid());
-		drugStartDate.setOrderId(order.getOrderId());
-		DrugStartDate oldDrugStartDate = drugStartDateDao.getStartDateByOrderUUID(drugStartDate.getOrderUuid());
+	public DrugDispenseDate save(@RequestBody DrugDispenseDate DrugDispenseDate) throws Exception {
+		Order order = DrugDispenseDateDao.getOrderIDByUuid(DrugDispenseDate.getOrderUuid());
+		DrugDispenseDate.setOrderId(order.getOrderId());
+		DrugDispenseDate oldDrugDispenseDate = DrugDispenseDateDao.getDispenseDateByOrderUUID(DrugDispenseDate.getOrderUuid());
 
-		if (oldDrugStartDate != null) {
-			log.error(oldDrugStartDate.getId());
-			drugStartDate.setId(oldDrugStartDate.getId());
-			return drugStartDateDao.updateDrugStartDate(drugStartDate);
+		if (oldDrugDispenseDate != null) {
+			log.error(oldDrugDispenseDate.getId());
+			DrugDispenseDate.setId(oldDrugDispenseDate.getId());
+			return DrugDispenseDateDao.updateDrugDispenseDate(DrugDispenseDate);
 		}else {
-			return drugStartDateDao.saveOrUpdate(drugStartDate);
+			return DrugDispenseDateDao.saveOrUpdate(DrugDispenseDate);
 		}
 	}
 }
