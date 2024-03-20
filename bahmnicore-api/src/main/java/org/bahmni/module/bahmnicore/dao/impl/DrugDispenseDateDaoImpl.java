@@ -2,8 +2,8 @@ package org.bahmni.module.bahmnicore.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bahmni.module.bahmnicore.dao.DrugStartDateDao;
-import org.bahmni.module.bahmnicore.model.DrugStartDate;
+import org.bahmni.module.bahmnicore.dao.DrugDispenseDateDao;
+import org.bahmni.module.bahmnicore.model.DrugDispenseDate;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.Session;
@@ -14,12 +14,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Repository;
 import org.hibernate.Query;
-import java.util.List;
 
 @Repository
-public class DrugStartDateDaoImpl implements DrugStartDateDao {
+public class DrugDispenseDateDaoImpl implements DrugDispenseDateDao {
 	
-	protected static final Log log = LogFactory.getLog(DrugStartDateDaoImpl.class);
+	protected static final Log log = LogFactory.getLog(DrugDispenseDateDaoImpl.class);
 	
 	/**
 	 * Hibernate session factory
@@ -39,9 +38,9 @@ public class DrugStartDateDaoImpl implements DrugStartDateDao {
 	
 	@Override
 	@Transactional
-	public DrugStartDate saveOrUpdate(DrugStartDate drugStartDate) {
-		sessionFactory.getCurrentSession().saveOrUpdate(drugStartDate);
-		return drugStartDate;
+	public DrugDispenseDate saveOrUpdate(DrugDispenseDate drugDispenseDate) {
+		sessionFactory.getCurrentSession().saveOrUpdate(drugDispenseDate);
+		return drugDispenseDate;
 	}
 
 	@Override
@@ -55,23 +54,23 @@ public class DrugStartDateDaoImpl implements DrugStartDateDao {
 	}
 	@Override
 	@Transactional
-	public DrugStartDate getStartDateByOrderUUID(String uuid) {
-		String queryString = "select D from DrugStartDate D where D.orderUuid = (:uuid)";
+	public DrugDispenseDate getDispenseDateByOrderUUID(String uuid) {
+		String queryString = "select D from DrugDispenseDate D where D.orderUuid = (:uuid)";
 		Query queryToGetOrderId = sessionFactory.getCurrentSession().createQuery(queryString);
 		queryToGetOrderId.setString("uuid", uuid);
 		queryToGetOrderId.setMaxResults(1);
-		return (DrugStartDate) queryToGetOrderId.uniqueResult();
+		return (DrugDispenseDate) queryToGetOrderId.uniqueResult();
 	}
 
 	@Override
 	@Transactional
-	public DrugStartDate updateDrugStartDate(DrugStartDate drugStartDate) {
+	public DrugDispenseDate updateDrugDispenseDate(DrugDispenseDate drugDispenseDate) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			session.update(drugStartDate);
+			session.update(drugDispenseDate);
 
 			// Commit the transaction
 			tx.commit();
@@ -83,7 +82,7 @@ public class DrugStartDateDaoImpl implements DrugStartDateDao {
 		} finally {
 			session.close();
 		}
-        return drugStartDate;
+        return drugDispenseDate;
     }
 }
 
