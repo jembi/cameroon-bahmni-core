@@ -4397,6 +4397,28 @@
         <comment>Override SQL query for Get Patient Details in Ward</comment>
         <sqlFile path="BahmniBMPatientListInWard.sql"/>
     </changeSet>
+
+    <changeSet id="20240220-3140" author="Sush">
+
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="drug_dispense" />
+            </not>
+        </preConditions>
+
+        <sql>
+            CREATE TABLE drug_dispense (
+            id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+            dispense_date DATETIME NOT NULL,
+            order_uuid CHAR(38) NOT NULL,
+            order_id INT(11) NOT NULL,
+            date_created DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            UNIQUE (order_uuid, order_id)
+            );
+
+        </sql>
+
+    </changeSet>
     <changeSet id="jembi-COM-946-20201102122100" author="lauravignoli" context="r0.92">
         <preConditions onFail="MARK_RAN">
             <not>
