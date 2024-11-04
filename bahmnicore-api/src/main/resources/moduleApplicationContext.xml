@@ -20,6 +20,7 @@
 
 
     <bean id="orderDao" class="org.bahmni.module.bahmnicore.dao.impl.OrderDaoImpl" />
+    <bean id="drugDispenseDateDao" class="org.bahmni.module.bahmnicore.dao.impl.DrugDispenseDateDaoImpl" />
 
     <bean parent="obsServiceTarget" >
         <property name="handlers">
